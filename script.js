@@ -8,17 +8,28 @@ const clearButton = document.querySelector('#clear-btn');
 const clearAllButton = document.querySelector('#clear-all-btn');
 
 let expression = '';
-let currentResult;
 
 function operate(expr) {
     const tokens = expr.replace(/\s+/g, '').split(/([+\-x/])/).filter(token => token);
-    let result = parseFloat(tokens[0]);
-    // let keeper = result;
+    let startIndex = 0;
+    let result = 0;
 
-    for (let i = 1; i < tokens.length; i += 2) {
+    if(tokens[0] === '-' && tokens.length > 1) {
+        result = -parseFloat(tokens[1]);
+        startIndex = 2;
+    }
+    else if (tokens[0] === '+' && tokens.length > 1) {
+        result = parseFloat(tokens[1]);
+        startIndex = 2;
+    }
+    else {
+        result = parseFloat(tokens[0]);
+        startIndex = 1;
+    }
+
+    for (let i = startIndex; i < tokens.length; i += 2) {
         const operator = tokens [i];
         const nextNumber = parseFloat(tokens[i + 1]);
-        // const previousResult = result;
 
         switch (operator) {
             case '+':
@@ -37,8 +48,6 @@ function operate(expr) {
             default:
             throw new Error(`Unknown operator ${operator}`);
         }
-
-        // keeper = result;
     }
 
     return result;
@@ -52,11 +61,14 @@ operationDisplay.textContent = expression
 
 operatorButton.forEach(function (btn) { 
 btn.addEventListener('click', function (e) {
-    if(!/[x/+-\-]$/.test(expression)) {
+    if(!expression && (e.target.textContent === 'x' || e.target.textContent === '/')) {
+        return;
+    }
+    else if(!/[x/+-\-]$/.test(expression)) {
 
         if(/[x/+\\-]/.test(expression)) {
       const result = operate(expression);
-  operationResult.textContent = result;
+      operationResult.textContent = result;
         }
 
        expression +=e.target.textContent
