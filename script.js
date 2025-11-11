@@ -5,80 +5,75 @@ const numberButton = [...document.querySelectorAll('.number-btn')];
 const operatorButton = [...document.querySelectorAll('.operator-btn')];
 const operationButton = document.querySelector('#perform-operation-btn');
 
-let firstNumber;
-let secondNumber;
-let operator;
+let expression = '';
 
-const firstDomNumber = document.createElement('span');
-const secondDomNumber = document.createElement('span');
+function operate(expr) {
+    const cleanExpr = expr.replace(/\s+/g, '');
+    let result = handleMultiplicationDivision(cleanExpr);
+    result = handleAdditionSubtraction(result);
+    return result
+
+}
+
+function handleMultiplicationDivision(exp) {
+    const parts  = exp.split(/([+\-])/);
+    const processedParts = parts.map(part => {
+        if (part === '+' || part === '-') return part;
+        const subParts = part.split(/([*/])/);
+        let subResult = parseFloat(subParts[0]);
+        for(let i = 0; i < subParts.length; i+=2) {
+            const operator = subParts[i];
+            const nextNum = parseFloat(subParts[i + 1]);
+
+            if (operator === '*') {
+                subResult *= nextNum;
+            } 
+            else if (operator === '/') {
+                if (nextNum === 0) throw new Error('Division by zero');
+                subResult /= nextNum;
+
+            }
+        }
+        return subResult.toString();
+    });
+
+    return processedParts.join('');
+}
+
+function handleAdditionSubtraction(exp) {
+    const parts = exp.split(/([+\-])/);
+    let result = parseFloat(parts[0]);
+
+    for (let i = 1; i < parts.length; i+=2) {
+        const operator = parts[i];
+        const nextNum = parseFloat(parts[i + 1]);
+
+        if (operator === '+') {
+            result += nextNum;
+        }
+        else if (operator === '-') {
+            result += nextNum;
+        }
+    }
+    return result;
+}
 
 numberButton.forEach(function (btn) { 
 btn.addEventListener('click', function (e) {
-if(!operator) {
-    
-    firstDomNumber.textContent += e.target.textContent
-    firstNumber = parseInt(firstDomNumber.textContent)
-    operationDisplay.appendChild(firstDomNumber);
-}
-
-else {
-    
-    secondDomNumber.textContent += e.target.textContent
-    secondNumber = parseInt(secondDomNumber.textContent)
-    operationDisplay.appendChild(secondDomNumber);
-}
-
+expression +=e.target.textContent
+operationDisplay.textContent = expression
 })})
 
 operatorButton.forEach(function (btn) { 
 btn.addEventListener('click', function (e) {
-const domOperator = document.createElement('span')
-domOperator.textContent = e.target.textContent
-operator = domOperator.textContent
-operationDisplay.appendChild(domOperator)
+expression +=e.target.textContent
+operationDisplay.textContent = expression
 })})
 
+
 operationButton.addEventListener('click', function () {
-    if (firstNumber && secondNumber) {
-    const domResult = document.createElement('span')
-    const operation = operate(firstNumber, operator, secondNumber);
-    domResult.textContent = operation
-    operationResult.appendChild(domResult);
-    }
+  const result = operate(expression);
+  operationResult.textContent = result;
 })
 
-
-function add(a,b) {
-    return a + b;
-}
-
-function subtract(a, b) {
-    return a - b;
-}
-
-function multiply(a, b) {
-    return a * b;
-}
-
-function divide(a, b) {
-    return a / b;
-}
-
-function operate(first, operator, second) {
-    let result;
-    switch (operator) {
-        case '+':
-           result =  add(first, second);
-            break;
-        case '-':
-            result = subtract(first, second);
-            break;
-        case 'x':
-            result = multiply(first, second);
-            break;
-        default:
-            result = divide(first, second);
-    }
-    return result;
-}
 
