@@ -1,5 +1,6 @@
 const operationDisplay = document.querySelector('#display');
 const operationResult = document.querySelector('#result');
+const error = document.querySelector('#error')
 
 const numberButton = [...document.querySelectorAll('.number-btn')];
 const operatorButton = [...document.querySelectorAll('.operator-btn')];
@@ -8,6 +9,14 @@ const clearButton = document.querySelector('#clear-btn');
 const clearAllButton = document.querySelector('#clear-all-btn');
 
 let expression = '';
+
+function showErrorMessage() {
+    error.style.display = 'inline';
+}
+
+function clearErrorMessage() {
+    error.style.display = 'none';
+}
 
 function operate(expr) {
     const tokens = expr.replace(/\s+/g, '').split(/([+\-x÷])/).filter(token => token);
@@ -42,11 +51,14 @@ function operate(expr) {
                 result *= nextNumber;
                 break;
             case '÷':
-                if (nextNumber === 0) throw new Error('Division by zero');
+                if (nextNumber === 0) {
+                    showErrorMessage();
+                    break;
+                };
                 result /= nextNumber;
                 break;
             default:
-            throw new Error(`Unknown operator ${operator}`);
+            result = '';
         }
     }
 
@@ -55,8 +67,8 @@ function operate(expr) {
 
 numberButton.forEach(function (btn) { 
 btn.addEventListener('click', function (e) {
-expression +=e.target.textContent
-operationDisplay.textContent = expression
+expression += e.target.textContent;
+operationDisplay.textContent = expression;
 })})
 
 operatorButton.forEach(function (btn) { 
@@ -72,20 +84,30 @@ btn.addEventListener('click', function (e) {
           expression = result;
         }
 
-       expression +=e.target.textContent
-       operationDisplay.textContent = expression
+       expression +=e.target.textContent;
+       operationDisplay.textContent = expression;
 }})})
 
 
 operationButton.addEventListener('click', function () {
-  const result = operate(expression);
-  operationResult.textContent = result;
-})
+    if(/^\d+÷0$/.test(expression.replace(/\s/g, ''))) {
+        showErrorMessage()
+        return
+    }
+
+    else {
+        clearErrorMessage();
+    if(!/[x÷+-\-]$/.test(expression) && expression.length) {
+      const result = operate(expression);
+      operationResult.textContent = result;
+    }
+}})
 
 clearAllButton.addEventListener('click', function () {
     expression = '';
     operationResult.textContent = '';
     operationDisplay.textContent = '';
+    clearErrorMessage();
 })
 
 clearButton.addEventListener('click', function () {

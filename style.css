@@ -49,3 +49,10 @@ button {
     cursor: pointer;
     outline: none;
 }
+
+#error {
+    display: none;
+    font-size: 12px;
+    font-weight: bold;
+    color: #dc2626;
+}
