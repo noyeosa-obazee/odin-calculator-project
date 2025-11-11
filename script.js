@@ -81,7 +81,7 @@ btn.addEventListener('click', function (e) {
         if(/[x÷+\\-]/.test(expression)) {
           const result = operate(expression);
           operationResult.textContent = result;
-          expression = result;
+          expression = Number.isInteger(parseFloat(result)) ? result : parseFloat(result).toFixed(1);
         }
 
        expression +=e.target.textContent;
@@ -99,7 +99,7 @@ operationButton.addEventListener('click', function () {
         clearErrorMessage();
     if(!/[x÷+-\-]$/.test(expression) && expression.length) {
       const result = operate(expression);
-      operationResult.textContent = result;
+      operationResult.textContent = Number.isInteger(parseFloat(result)) ? result : parseFloat(result).toFixed(1);
     }
 }})
 
